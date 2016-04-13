@@ -41,8 +41,6 @@ public class SpawnTanks : MonoBehaviour {
 	public GameObject bomberPrefab;
     public GameObject buildingPrefab;
 
-	public GameObject bulletPrefab;
-    public GameObject grenadePrefab;
 	public GameObject explosionPrefab;
     public GameObject bonusePrefab;
 
@@ -64,8 +62,6 @@ public class SpawnTanks : MonoBehaviour {
 	List<GameObject> planes = new List<GameObject>();
 	List<GameObject> bombers = new List<GameObject>();
     List<GameObject> buildings = new List<GameObject>();
-	List<GameObject> bullets = new List<GameObject>();
-    List<GameObject> grenades = new List<GameObject>();
     List<GameObject> explosions = new List<GameObject>();
     List<GameObject> bonuses = new List<GameObject>();
 	tank_script tempTankScr;
@@ -77,32 +73,7 @@ public class SpawnTanks : MonoBehaviour {
 			pool[i].GetComponent<SpriteRenderer>().color = new Color(Random.Range (0.8f, 1f), Random.Range (0.8f, 1f), Random.Range (0.8f, 1f));
 		}
 	}
-	void ShootBullet(Vector3 myPos, float angle) {
-        Vector3 direction = new Vector3(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle), 0);
-        float len;
-        if (tanks.Count > 0) {
-            len = tanks[0].GetComponent<CircleCollider2D>().radius + bullets[0].GetComponent<CircleCollider2D>().radius;
-        }
-        else {
-            len = planes[0].GetComponent<CircleCollider2D>().radius + bullets[0].GetComponent<CircleCollider2D>().radius;
-        }
-        len += 0.1f; // len = size of 2 colliders + small value
-        int i = InstantiateBulletIfFree(bullets, "shot", myPos + direction * len);
-        //instantiate_bullet_if_free(explosions, "explosion", my_pos);
-        if (i >= 0) {
-			bullets[i].transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-			bullets[i].transform.position = myPos + direction * len;
-		}
-	}
-    void DropBomb(Vector3 myPos, float angle) {
-        Vector3 direction = new Vector3(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle), 0);
-        float len = bombers[0].GetComponent<CircleCollider2D>().radius + grenades[0].GetComponent<CircleCollider2D>().radius + 0.1f;
-        int i = InstantiateBulletIfFree(grenades, "shot", myPos + direction * len);
-        if (i >= 0) {
-            grenades[i].transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            grenades[i].transform.position = myPos + direction * len;
-        }
-    }
+
     // Use this for initialization
     void Start () {
 		backgroundAnimators = new Animator[backgrounds.Length];
@@ -113,8 +84,6 @@ public class SpawnTanks : MonoBehaviour {
         alienControlScript = GetComponent<control_stuff>();
 
         int maxExplosions = tankQuantity + planeQuantity + bomberQuantity;
-        int maxBullets = (tankQuantity + planeQuantity) * 50;
-        int maxGrenades = bomberQuantity * 50;
 
         InitPool(tanks, tankPrefab, tankQuantity);
 		ShuffleSpriteColors(tanks);
@@ -125,8 +94,6 @@ public class SpawnTanks : MonoBehaviour {
         InitBuildingPool(buildings, buildingPrefab, buildingQuality);
 
         InitBulletPool(explosions, explosionPrefab, maxExplosions);
-        InitBulletPool(bullets, bulletPrefab, maxBullets);
-        InitBulletPool(grenades, grenadePrefab, maxGrenades);
         InitBulletPool(bonuses, bonusePrefab, bonusQuantity);
     }
     void InitBulletPool(List<GameObject> pool, GameObject prefab, int max) {
@@ -145,12 +112,6 @@ public class SpawnTanks : MonoBehaviour {
 		for(int i = 0; i < max; i++) {
 			pool.Add(Instantiate(prefab, transform.position + Vector3.up * height, Quaternion.identity)as GameObject);
 			tempTankScr = pool[i].GetComponent<tank_script>();
-            if (pool[i].tag == "bomber") {
-                tempTankScr.shoot = DropBomb;
-            }
-            else {
-                tempTankScr.shoot = ShootBullet;
-            }
 			tempTankScr.id = i;
 			Deactivate(pool[i], height);
 		}
@@ -323,8 +284,6 @@ public class SpawnTanks : MonoBehaviour {
         CheckDeadsInPool(planes);
         CheckDeadsInPool(bombers, 5);
         CheckDeadsInPool(buildings);
-        CheckDeadsInPool(bullets);
-        CheckDeadsInPool(grenades);
         CheckDeadsInPool(explosions);
         CheckDeadsInPool(bonuses);
 

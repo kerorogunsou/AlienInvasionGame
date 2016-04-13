@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
+using System.Collections.Generic; 
 
 public class AlienSwarmControl : MonoBehaviour {
     int health = 100;
@@ -9,7 +9,7 @@ public class AlienSwarmControl : MonoBehaviour {
 
     Animator anim;
     public GameObject laser;
-    LaserPool lasers = new LaserPool();
+    ProjectilePool lasers = new ProjectilePool();
     bool shieldActive = false;
     GameObject shield;
     CustomizeableTimer shieldTimer = new CustomizeableTimer(500);
@@ -127,43 +127,5 @@ public class AlienSwarmControl : MonoBehaviour {
             AcceptBonuse(other.gameObject.tag);
             other.gameObject.tag = "out";
         }
-    }
-}
-
-public class LaserPool {
-    public List<GameObject> pool = new List<GameObject>();
-    public LaserPool() { }
-    public void InitPool(GameObject prefab, int max, Vector3 pos) {
-        for (int i = 0; i < max; i++) {
-            pool.Add(GameObject.Instantiate(prefab, pos, Quaternion.identity) as GameObject);
-            deactivate(pool[i], pos);
-        }
-    }
-    private void deactivate(GameObject g, Vector3 pos) {
-        if (g.activeSelf) {
-            g.SetActive(false);
-        }
-        g.transform.position = pos;
-        g.transform.rotation = Quaternion.identity;
-        g.tag = "free";
-    }
-    public void CheckDeadsInPool(Vector3 pos) {
-        for (int i = 0; i < pool.Count; i++) {
-            if (pool[i].tag == "out") {
-                deactivate(pool[i], pos);
-            }
-        }
-    }
-    public int InstantiateIfFree(string tag, Vector3 pos, Quaternion rot) {
-        for (int i = 0; i < pool.Count; i++) {
-            if (pool[i].tag == "free") {
-                pool[i].SetActive(true);
-                pool[i].tag = tag;
-                pool[i].transform.position = pos;
-                pool[i].transform.rotation = rot;
-                return i;
-            }
-        }
-        return -1;
     }
 }
