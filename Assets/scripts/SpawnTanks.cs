@@ -167,7 +167,7 @@ public class SpawnTanks : MonoBehaviour {
 		int bonuse = InstantiateBulletIfFree(bonuses, bonuseNames[bonusInd] + "_bonus", pos);
 		if (bonuse >= 0) {
 			tempBonuseScr = bonuses[bonuse].GetComponent<bonus_ai>();
-			tempBonuseScr.target = alienControlScript.ChooseRandomAlien();
+			tempBonuseScr.targetAlien = alienControlScript.ChooseRandomAlien();
 			bonuses[bonuse].gameObject.GetComponent<SpriteRenderer>().sprite = bonuseSprites[bonusInd];
 		}
     }
